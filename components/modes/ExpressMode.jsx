@@ -1,23 +1,21 @@
 'use client'
 
 import { EXPRESS_ROLES, EXPRESS_FORMATS } from '@/lib/constants'
+import SelectWithOther from '../SelectWithOther'
 
-/**
- * Mode Express : 3 champs simples pour débutants.
- */
 export default function ExpressMode({ data, onChange }) {
   const set = (key) => (e) => onChange({ ...data, [key]: e.target.value })
 
   const selectClass = [
-    'w-full border border-gray-200 rounded-xl px-4 py-3 text-opt-text text-sm',
-    'focus:outline-none focus:ring-2 focus:ring-opt-violet/20 focus:border-opt-violet',
-    'transition-colors bg-white',
+    'w-full border rounded-xl px-4 py-3 text-sm',
+    'focus:outline-none focus:ring-2 focus:ring-[var(--opt-violet)]/20 focus:border-[var(--opt-violet)]',
+    'transition-colors',
   ].join(' ')
 
   const textareaClass = [
-    'w-full border border-gray-200 rounded-xl px-4 py-3 text-opt-text text-sm',
-    'focus:outline-none focus:ring-2 focus:ring-opt-violet/20 focus:border-opt-violet',
-    'transition-colors resize-none bg-white',
+    'w-full border rounded-xl px-4 py-3 text-sm',
+    'focus:outline-none focus:ring-2 focus:ring-[var(--opt-violet)]/20 focus:border-[var(--opt-violet)]',
+    'transition-colors resize-none',
   ].join(' ')
 
   return (
@@ -28,22 +26,16 @@ export default function ExpressMode({ data, onChange }) {
         <label className="block text-opt-text font-semibold text-sm mb-1.5">
           Tu es un...
         </label>
-        <select value={data.role} onChange={set('role')} className={selectClass}>
-          <option value="">-- Choisir un rôle --</option>
-          {EXPRESS_ROLES.map((r) => (
-            <option key={r} value={r}>{r}</option>
-          ))}
-          <option value="Autre">Autre (préciser ci-dessous)</option>
-        </select>
-        {data.role === 'Autre' && (
-          <input
-            type="text"
-            value={data.customRole}
-            onChange={set('customRole')}
-            placeholder="Ex : Responsable qualité, Architecte..."
-            className={[selectClass, 'mt-2'].join(' ')}
-          />
-        )}
+        <SelectWithOther
+          value={data.role}
+          customValue={data.customRole}
+          onChange={set('role')}
+          onCustomChange={set('customRole')}
+          options={EXPRESS_ROLES}
+          placeholder="-- Choisir un rôle --"
+          customPlaceholder="Ex : Responsable qualité, Architecte..."
+          className={selectClass}
+        />
       </div>
 
       {/* Champ 2 : Je veux */}
@@ -71,12 +63,16 @@ export default function ExpressMode({ data, onChange }) {
         <label className="block text-opt-text font-semibold text-sm mb-1.5">
           Le résultat doit être...
         </label>
-        <select value={data.format} onChange={set('format')} className={selectClass}>
-          <option value="">-- Choisir un format de sortie --</option>
-          {EXPRESS_FORMATS.map((f) => (
-            <option key={f} value={f}>{f}</option>
-          ))}
-        </select>
+        <SelectWithOther
+          value={data.format}
+          customValue={data.customFormat}
+          onChange={set('format')}
+          onCustomChange={set('customFormat')}
+          options={EXPRESS_FORMATS}
+          placeholder="-- Choisir un format de sortie --"
+          customPlaceholder="Précisez le format souhaité..."
+          className={selectClass}
+        />
       </div>
 
     </div>

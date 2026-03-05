@@ -2,21 +2,31 @@
 
 import { useState } from 'react'
 import { saveLead } from '@/lib/supabase'
+import ThemeToggle from './ThemeToggle'
+import Logo from './Logo'
 
-/**
- * Portail d'accès PromptIA : capture l'email, l'enregistre dans Supabase,
- * puis appelle onAccess pour afficher le générateur de prompts.
- */
 export default function EmailGate({ onAccess }) {
+  const [nom, setNom]         = useState('')
+  const [prenom, setPrenom]   = useState('')
   const [email, setEmail]     = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError]     = useState('')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const trimmed = email.trim().toLowerCase()
+    const trimmedEmail = email.trim().toLowerCase()
+    const trimmedNom = nom.trim()
+    const trimmedPrenom = prenom.trim()
 
-    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+    if (!trimmedNom) {
+      setError('Veuillez entrer votre nom.')
+      return
+    }
+    if (!trimmedPrenom) {
+      setError('Veuillez entrer votre prénom.')
+      return
+    }
+    if (!trimmedEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
       setError('Veuillez entrer une adresse email valide.')
       return
     }
@@ -24,43 +34,53 @@ export default function EmailGate({ onAccess }) {
     setLoading(true)
     setError('')
 
-    // Enregistrement Supabase (non bloquant)
-    await saveLead(trimmed, 'promptia_v2', 'promptia_generator')
-
-    // Stockage local pour éviter de redemander à la prochaine visite
+    // Persister immédiatement pour éviter la boucle d'auth
     try {
-      localStorage.setItem('opt_kit_ia_email', trimmed)
-    } catch {
-      // Mode privé - on continue quand même
-    }
+      localStorage.setItem('opt_kit_ia_email', trimmedEmail)
+      localStorage.setItem('opt_kit_ia_nom', trimmedNom)
+      localStorage.setItem('opt_kit_ia_prenom', trimmedPrenom)
+    } catch {}
 
-    onAccess(trimmed)
-    setLoading(false)
+    onAccess(trimmedEmail)
+
+    // Enregistrer le lead en arrière-plan (non bloquant)
+    saveLead(trimmedEmail, trimmedNom, trimmedPrenom, 'promptia')
   }
 
+  const inputClass = [
+    'w-full border rounded-xl px-4 py-3 text-sm transition-colors',
+    'focus:outline-none focus:ring-2',
+    'bg-opt-input-bg text-opt-text',
+    error
+      ? 'border-opt-coral focus:border-opt-coral focus:ring-opt-coral/20'
+      : 'border-[var(--opt-input-border)] focus:border-[var(--opt-violet)] focus:ring-[var(--opt-violet)]/20',
+    'disabled:opacity-60',
+  ].join(' ')
+
   return (
-    <div className="min-h-screen bg-opt-fond flex flex-col">
+    <div className="min-h-screen bg-opt-fond flex flex-col relative">
+
+      {/* Ambient glow */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute top-1/4 left-1/3 w-[500px] h-[500px] rounded-full opacity-[0.06]"
+          style={{ background: 'radial-gradient(circle, rgba(198, 7, 179, 0.4) 0%, transparent 70%)', filter: 'blur(80px)' }} />
+      </div>
 
       {/* En-tête */}
-      <header className="bg-opt-dark py-4 px-6">
-        <div className="max-w-5xl mx-auto">
-          <span className="text-white font-titre font-bold text-xl tracking-widest">OPT.</span>
+      <header className="glass py-4 px-6 relative z-10"
+        style={{ borderBottom: '1px solid var(--opt-header-border)' }}>
+        <div className="max-w-5xl mx-auto flex items-center justify-between">
+          <Logo />
+          <ThemeToggle />
         </div>
       </header>
 
       {/* Contenu principal */}
-      <main className="flex-1 flex items-center justify-center px-4 py-10">
+      <main className="flex-1 flex items-center justify-center px-4 py-10 relative z-10">
         <div className="max-w-xl w-full">
 
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-opt-violet/10 text-opt-violet
-            text-sm font-medium px-3 py-1 rounded-full mb-5">
-            <span className="w-1.5 h-1.5 rounded-full bg-opt-violet" />
-            Accès gratuit
-          </div>
-
           {/* Titre */}
-          <h1 className="font-titre text-3xl sm:text-4xl font-bold text-opt-text mb-3 leading-tight">
+          <h1 className="font-titre text-3xl sm:text-4xl font-bold mb-3 leading-tight gradient-text">
             PromptIA - Votre assistant prompt
           </h1>
           <p className="text-opt-muted text-lg mb-8 leading-relaxed">
@@ -77,7 +97,7 @@ export default function EmailGate({ onAccess }) {
             ].map((m) => (
               <div
                 key={m.label}
-                className="bg-white rounded-xl shadow-card p-3 text-center border border-gray-100"
+                className="glass rounded-xl p-3 text-center glow-accent"
               >
                 <div className="text-xl mb-1">{m.icon}</div>
                 <p className="text-opt-text text-xs font-bold tracking-wide">{m.label}</p>
@@ -87,11 +107,43 @@ export default function EmailGate({ onAccess }) {
           </div>
 
           {/* Formulaire */}
-          <div className="bg-white rounded-2xl shadow-card p-6 sm:p-8">
+          <div className="glass rounded-2xl p-6 sm:p-8 glow-accent">
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label htmlFor="nom" className="block text-opt-text font-semibold text-sm mb-2">
+                    Nom
+                  </label>
+                  <input
+                    id="nom"
+                    type="text"
+                    value={nom}
+                    onChange={(e) => { setNom(e.target.value); setError('') }}
+                    placeholder="Dupont"
+                    autoComplete="family-name"
+                    disabled={loading}
+                    className={inputClass}
+                  />
+                </div>
+                <div>
+                  <label htmlFor="prenom" className="block text-opt-text font-semibold text-sm mb-2">
+                    Prénom
+                  </label>
+                  <input
+                    id="prenom"
+                    type="text"
+                    value={prenom}
+                    onChange={(e) => { setPrenom(e.target.value); setError('') }}
+                    placeholder="Jean"
+                    autoComplete="given-name"
+                    disabled={loading}
+                    className={inputClass}
+                  />
+                </div>
+              </div>
               <div>
                 <label htmlFor="email" className="block text-opt-text font-semibold text-sm mb-2">
-                  Votre adresse email professionnelle
+                  Adresse email professionnelle
                 </label>
                 <input
                   id="email"
@@ -101,25 +153,19 @@ export default function EmailGate({ onAccess }) {
                   placeholder="prenom.nom@entreprise.fr"
                   autoComplete="email"
                   disabled={loading}
-                  className={[
-                    'w-full border rounded-xl px-4 py-3 text-opt-text text-sm',
-                    'focus:outline-none focus:ring-2 transition-colors',
-                    error
-                      ? 'border-opt-coral focus:border-opt-coral focus:ring-opt-coral/20'
-                      : 'border-gray-200 focus:border-opt-violet focus:ring-opt-violet/20',
-                    'disabled:opacity-60',
-                  ].join(' ')}
+                  className={inputClass}
                 />
-                {error && (
-                  <p className="text-opt-coral text-xs mt-1.5">{error}</p>
-                )}
               </div>
+
+              {error && (
+                <p className="text-opt-coral text-xs">{error}</p>
+              )}
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-opt-violet text-white rounded-xl px-6 py-3.5
-                  font-semibold text-sm hover:bg-[#580f56] active:scale-[0.98]
+                className="w-full bg-opt-gradient text-white rounded-xl px-6 py-3.5
+                  font-semibold text-sm hover:shadow-glow active:scale-[0.98]
                   transition-all disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {loading ? (
@@ -134,17 +180,12 @@ export default function EmailGate({ onAccess }) {
               </button>
             </form>
 
-            {/* Mention RGPD */}
-            <p className="text-opt-muted text-xs mt-4 text-center leading-relaxed">
-              Vos données sont utilisées uniquement pour l'accès à cet outil.
-              Aucun envoi commercial sans votre accord.
-            </p>
           </div>
         </div>
       </main>
 
       {/* Pied de page */}
-      <footer className="py-4 px-6 text-center">
+      <footer className="py-4 px-6 text-center relative z-10">
         <p className="text-opt-muted text-xs">
           PromptIA par OPT. | opt-conseil.fr | clement@opt-conseil.fr
         </p>

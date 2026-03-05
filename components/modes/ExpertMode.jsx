@@ -6,10 +6,8 @@ import {
   DOCUMENT_TYPES, LENGTHS, TONES, STRUCTURES, PERSONALITIES,
   GUARDRAILS, DEFAULT_CRITERIA,
 } from '@/lib/constants'
+import SelectWithOther from '../SelectWithOther'
 
-/**
- * Mode Expert : Contrat IA complet en 8 blocs accordéons.
- */
 export default function ExpertMode({ data, onChange }) {
   const [open, setOpen] = useState({
     role: true, mission: false, context: false, constraints: false,
@@ -20,10 +18,9 @@ export default function ExpertMode({ data, onChange }) {
   const set = (key) => (e) => onChange({ ...data, [key]: e.target.value })
 
   const domainList = Object.keys(DOMAINS)
-  const subdomains = data.domain ? (DOMAINS[data.domain] || []) : []
-  const roles = data.domain ? (ROLES_BY_DOMAIN[data.domain] || []) : []
+  const subdomains = data.domain && data.domain !== 'Autre' ? (DOMAINS[data.domain] || []) : []
+  const roles = data.domain && data.domain !== 'Autre' ? (ROLES_BY_DOMAIN[data.domain] || []) : []
 
-  // Garde-fous automatiques selon le domaine et type de tâche
   useEffect(() => {
     let auto = [...(data.guardrails || [])]
     let changed = false
@@ -40,7 +37,6 @@ export default function ExpertMode({ data, onChange }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.domain, data.taskType])
 
-  // Auto-vérification si longueur "Approfondi"
   useEffect(() => {
     if (data.length === 'Approfondi > 1500 mots' && data.criteria?.length === 0) {
       onChange({ ...data, criteria: [...DEFAULT_CRITERIA] })
@@ -48,21 +44,19 @@ export default function ExpertMode({ data, onChange }) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data.length])
 
-  const selectClass = 'w-full border border-gray-200 rounded-xl px-4 py-2.5 text-opt-text text-sm focus:outline-none focus:ring-2 focus:ring-opt-violet/20 focus:border-opt-violet transition-colors bg-white'
-  const textareaClass = 'w-full border border-gray-200 rounded-xl px-4 py-2.5 text-opt-text text-sm focus:outline-none focus:ring-2 focus:ring-opt-violet/20 focus:border-opt-violet transition-colors resize-none bg-white'
-  const inputClass = 'w-full border border-gray-200 rounded-xl px-4 py-2.5 text-opt-text text-sm focus:outline-none focus:ring-2 focus:ring-opt-violet/20 focus:border-opt-violet transition-colors bg-white'
+  const selectClass = 'w-full border rounded-xl px-4 py-2.5 text-opt-text text-sm focus:outline-none focus:ring-2 focus:ring-[var(--opt-violet)]/20 focus:border-[var(--opt-violet)] transition-colors'
+  const textareaClass = 'w-full border rounded-xl px-4 py-2.5 text-opt-text text-sm focus:outline-none focus:ring-2 focus:ring-[var(--opt-violet)]/20 focus:border-[var(--opt-violet)] transition-colors resize-none'
+  const inputClass = 'w-full border rounded-xl px-4 py-2.5 text-opt-text text-sm focus:outline-none focus:ring-2 focus:ring-[var(--opt-violet)]/20 focus:border-[var(--opt-violet)] transition-colors'
 
   const isSensitiveDomain = data.domain === 'Juridique' || data.domain === 'Santé'
 
-  // Gestion guardrails
   const toggleGuardrail = (id) => {
     const current = data.guardrails || []
     const next = current.includes(id) ? current.filter((g) => g !== id) : [...current, id]
     onChange({ ...data, guardrails: next })
   }
 
-  // Gestion spécialisations (tags)
-  const subdomainOptions = data.domain ? (DOMAINS[data.domain] || []) : []
+  const subdomainOptions = data.domain && data.domain !== 'Autre' ? (DOMAINS[data.domain] || []) : []
   const toggleSpec = (s) => {
     const current = data.specializations || []
     if (current.includes(s)) {
@@ -72,7 +66,6 @@ export default function ExpertMode({ data, onChange }) {
     }
   }
 
-  // Gestion exemples
   const addExample = () => onChange({ ...data, examples: [...(data.examples || []), { input: '', output: '' }] })
   const setExample = (i, key, val) => {
     const ex = [...(data.examples || [])]
@@ -85,7 +78,6 @@ export default function ExpertMode({ data, onChange }) {
     onChange({ ...data, examples: ex })
   }
 
-  // Gestion critères auto-vérification
   const setCriterion = (i, val) => {
     const cr = [...(data.criteria || [])]
     cr[i] = val
@@ -98,34 +90,29 @@ export default function ExpertMode({ data, onChange }) {
       {/* ── 1. RÔLE & EXPERTISE ── */}
       <Block label="1. RÔLE & EXPERTISE" open={open.role} onToggle={() => toggle('role')} filled={!!(data.role || data.domain)}>
         <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="field-label">Secteur (filtre le rôle)</label>
-              <select
+              <SelectWithOther
                 value={data.domain}
+                customValue={data.customDomain}
                 onChange={(e) => onChange({ ...data, domain: e.target.value, subdomain: '', role: '' })}
+                onCustomChange={set('customDomain')}
+                options={domainList}
                 className={selectClass}
-              >
-                <option value="">-- Choisir --</option>
-                {domainList.map((d) => <option key={d} value={d}>{d}</option>)}
-              </select>
+              />
             </div>
             <div>
               <label className="field-label">Rôle</label>
-              <select value={data.role} onChange={set('role')} className={selectClass}>
-                <option value="">-- Choisir --</option>
-                {roles.map((r) => <option key={r} value={r}>{r}</option>)}
-                <option value="Autre">Autre (préciser)</option>
-              </select>
-              {data.role === 'Autre' && (
-                <input
-                  type="text"
-                  value={data.customRole}
-                  onChange={set('customRole')}
-                  placeholder="Votre rôle personnalisé"
-                  className={[inputClass, 'mt-2'].join(' ')}
-                />
-              )}
+              <SelectWithOther
+                value={data.role}
+                customValue={data.customRole}
+                onChange={set('role')}
+                onCustomChange={set('customRole')}
+                options={roles}
+                customPlaceholder="Votre rôle personnalisé"
+                className={selectClass}
+              />
             </div>
           </div>
 
@@ -154,8 +141,8 @@ export default function ExpertMode({ data, onChange }) {
                       className={[
                         'px-2.5 py-1 rounded-full text-xs font-medium border transition-all',
                         selected
-                          ? 'bg-opt-violet text-white border-opt-violet'
-                          : 'border-gray-200 text-opt-muted hover:border-opt-violet hover:text-opt-violet',
+                          ? 'bg-opt-gradient text-white border-transparent'
+                          : 'border-opt-border text-opt-muted hover:border-opt-violet hover:text-opt-violet',
                       ].join(' ')}
                     >
                       {s}
@@ -168,10 +155,14 @@ export default function ExpertMode({ data, onChange }) {
 
           <div>
             <label className="field-label">Posture / Personnalité</label>
-            <select value={data.personality} onChange={set('personality')} className={selectClass}>
-              <option value="">-- Choisir --</option>
-              {PERSONALITIES.map((p) => <option key={p} value={p}>{p}</option>)}
-            </select>
+            <SelectWithOther
+              value={data.personality}
+              customValue={data.customPersonality}
+              onChange={set('personality')}
+              onCustomChange={set('customPersonality')}
+              options={PERSONALITIES}
+              className={selectClass}
+            />
           </div>
         </div>
       </Block>
@@ -181,10 +172,14 @@ export default function ExpertMode({ data, onChange }) {
         <div className="space-y-3">
           <div>
             <label className="field-label">Type de tâche</label>
-            <select value={data.taskType} onChange={set('taskType')} className={selectClass}>
-              <option value="">-- Choisir --</option>
-              {TASK_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
-            </select>
+            <SelectWithOther
+              value={data.taskType}
+              customValue={data.customTaskType}
+              onChange={set('taskType')}
+              onCustomChange={set('customTaskType')}
+              options={TASK_TYPES}
+              className={selectClass}
+            />
           </div>
           <div>
             <label className="field-label">Objectif principal</label>
@@ -207,36 +202,53 @@ export default function ExpertMode({ data, onChange }) {
       {/* ── 3. CONTEXTE & DONNÉES ── */}
       <Block label="3. CONTEXTE & DONNÉES" open={open.context} onToggle={() => toggle('context')} filled={!!(data.subdomain || data.situation || data.rawData)}>
         <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="field-label">Sous-domaine</label>
-              <select value={data.subdomain} onChange={set('subdomain')} className={selectClass} disabled={!data.domain}>
-                <option value="">-- Choisir --</option>
-                {subdomains.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
+              <SelectWithOther
+                value={data.subdomain}
+                customValue={data.customSubdomain}
+                onChange={set('subdomain')}
+                onCustomChange={set('customSubdomain')}
+                options={subdomains}
+                className={selectClass}
+                disabled={!data.domain || data.domain === 'Autre'}
+              />
             </div>
             <div>
               <label className="field-label">Taille structure</label>
-              <select value={data.size} onChange={set('size')} className={selectClass}>
-                <option value="">-- Choisir --</option>
-                {SIZES.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
+              <SelectWithOther
+                value={data.size}
+                customValue={data.customSize}
+                onChange={set('size')}
+                onCustomChange={set('customSize')}
+                options={SIZES}
+                className={selectClass}
+              />
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="field-label">Public cible</label>
-              <select value={data.audience} onChange={set('audience')} className={selectClass}>
-                <option value="">-- Choisir --</option>
-                {AUDIENCES.map((a) => <option key={a} value={a}>{a}</option>)}
-              </select>
+              <SelectWithOther
+                value={data.audience}
+                customValue={data.customAudience}
+                onChange={set('audience')}
+                onCustomChange={set('customAudience')}
+                options={AUDIENCES}
+                className={selectClass}
+              />
             </div>
             <div>
               <label className="field-label">Niveau</label>
-              <select value={data.level} onChange={set('level')} className={selectClass}>
-                <option value="">-- Choisir --</option>
-                {LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
-              </select>
+              <SelectWithOther
+                value={data.level}
+                customValue={data.customLevel}
+                onChange={set('level')}
+                onCustomChange={set('customLevel')}
+                options={LEVELS}
+                className={selectClass}
+              />
             </div>
           </div>
           <div>
@@ -260,28 +272,40 @@ export default function ExpertMode({ data, onChange }) {
       {/* ── 4. CONTRAINTES ── */}
       <Block label="4. CONTRAINTES" open={open.constraints} onToggle={() => toggle('constraints')} filled={!!(data.length || data.tone || data.negativeConstraints)}>
         <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="field-label">Longueur</label>
-              <select value={data.length} onChange={set('length')} className={selectClass}>
-                <option value="">-- Choisir --</option>
-                {LENGTHS.map((l) => <option key={l} value={l}>{l}</option>)}
-              </select>
+              <SelectWithOther
+                value={data.length}
+                customValue={data.customLength}
+                onChange={set('length')}
+                onCustomChange={set('customLength')}
+                options={LENGTHS}
+                className={selectClass}
+              />
             </div>
             <div>
               <label className="field-label">Ton</label>
-              <select value={data.tone} onChange={set('tone')} className={selectClass}>
-                <option value="">-- Choisir --</option>
-                {TONES.map((t) => <option key={t} value={t}>{t}</option>)}
-              </select>
+              <SelectWithOther
+                value={data.tone}
+                customValue={data.customTone}
+                onChange={set('tone')}
+                onCustomChange={set('customTone')}
+                options={TONES}
+                className={selectClass}
+              />
             </div>
           </div>
           <div>
             <label className="field-label">Structure</label>
-            <select value={data.structure} onChange={set('structure')} className={selectClass}>
-              <option value="">-- Choisir --</option>
-              {STRUCTURES.map((s) => <option key={s} value={s}>{s}</option>)}
-            </select>
+            <SelectWithOther
+              value={data.structure}
+              customValue={data.customStructure}
+              onChange={set('structure')}
+              onCustomChange={set('customStructure')}
+              options={STRUCTURES}
+              className={selectClass}
+            />
           </div>
           <div>
             <label className="field-label">Contraintes négatives (NE PAS faire)</label>
@@ -301,10 +325,14 @@ export default function ExpertMode({ data, onChange }) {
         <div className="space-y-3">
           <div>
             <label className="field-label">Type de document</label>
-            <select value={data.documentType} onChange={set('documentType')} className={selectClass}>
-              <option value="">-- Choisir --</option>
-              {DOCUMENT_TYPES.map((d) => <option key={d} value={d}>{d}</option>)}
-            </select>
+            <SelectWithOther
+              value={data.documentType}
+              customValue={data.customDocumentType}
+              onChange={set('documentType')}
+              onCustomChange={set('customDocumentType')}
+              options={DOCUMENT_TYPES}
+              className={selectClass}
+            />
           </div>
           <div>
             <label className="field-label">Sections obligatoires</label>
@@ -322,9 +350,10 @@ export default function ExpertMode({ data, onChange }) {
       {/* ── 6. GARDE-FOUS ── */}
       <Block label="6. GARDE-FOUS" open={open.guardrails} onToggle={() => toggle('guardrails')} filled={(data.guardrails || []).length > 0}>
         {isSensitiveDomain && (
-          <div className="mb-3 flex items-start gap-2 bg-amber-50 border border-amber-200 rounded-xl p-3">
-            <span className="text-amber-500 text-base">⚠️</span>
-            <p className="text-xs text-amber-700 font-medium">
+          <div className="mb-3 flex items-start gap-2 rounded-xl p-3"
+            style={{ background: 'rgba(251, 191, 36, 0.1)', border: '1px solid rgba(251, 191, 36, 0.3)' }}>
+            <span className="text-base">⚠️</span>
+            <p className="text-xs font-medium" style={{ color: 'rgb(217, 159, 12)' }}>
               Domaine sensible : la vérification humaine est indispensable avant toute utilisation.
             </p>
           </div>
@@ -338,7 +367,7 @@ export default function ExpertMode({ data, onChange }) {
                   type="checkbox"
                   checked={checked}
                   onChange={() => toggleGuardrail(g.id)}
-                  className="mt-0.5 w-4 h-4 accent-opt-violet flex-shrink-0"
+                  className="mt-0.5 w-4 h-4 accent-[var(--opt-violet)] flex-shrink-0"
                 />
                 <div>
                   <p className="text-sm font-semibold text-opt-text group-hover:text-opt-violet transition-colors">
@@ -355,11 +384,12 @@ export default function ExpertMode({ data, onChange }) {
       {/* ── 7. EXEMPLES (few-shot) ── */}
       <Block label="7. EXEMPLES (few-shot)" open={open.examples} onToggle={() => toggle('examples')} filled={(data.examples || []).some((e) => e.input || e.output)}>
         <div className="space-y-3">
-          <p className="text-xs text-opt-muted bg-blue-50 border border-blue-100 rounded-lg p-2.5">
+          <p className="text-xs text-opt-muted rounded-lg p-2.5"
+            style={{ background: 'rgba(96, 165, 250, 0.1)', border: '1px solid rgba(96, 165, 250, 0.2)' }}>
             Un bon exemple vaut mieux que 100 mots d'instructions
           </p>
           {(data.examples || []).map((ex, i) => (
-            <div key={i} className="border border-gray-100 rounded-xl p-3 space-y-2 relative">
+            <div key={i} className="border border-opt-border rounded-xl p-3 space-y-2 relative">
               <button
                 type="button"
                 onClick={() => removeExample(i)}
@@ -417,12 +447,10 @@ export default function ExpertMode({ data, onChange }) {
   )
 }
 
-// ─── Composant bloc accordéon ─────────────────────────────────────────────────
-
 function Block({ label, open, onToggle, children, filled }) {
   return (
     <div className={`rounded-xl border transition-colors ${
-      open ? 'border-opt-violet/30 bg-white' : 'border-gray-200 bg-white'
+      open ? 'border-[var(--opt-violet)]/30 bg-opt-card' : 'border-opt-border bg-opt-card'
     }`}>
       <button
         type="button"
@@ -438,7 +466,7 @@ function Block({ label, open, onToggle, children, filled }) {
         </span>
       </button>
       {open && (
-        <div className="px-4 pb-4 pt-1 border-t border-gray-100">
+        <div className="px-4 pb-4 pt-1 border-t border-opt-border">
           {children}
         </div>
       )}
