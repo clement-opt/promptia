@@ -8,6 +8,7 @@ const dmSans = DM_Sans({
 })
 
 export const metadata = {
+  metadataBase: new URL('https://promptia.opt-conseil.com'),
   title: 'PromptIA - Générateur de prompts IA | OPT Conseil',
   description:
     "Générez des prompts IA professionnels en quelques clics. 3 modes : Express, Structuré, Expert. Par OPT Conseil.",
@@ -15,6 +16,13 @@ export const metadata = {
     title: 'PromptIA - Générateur de prompts IA | OPT Conseil',
     description: "Votre assistant pour créer des prompts IA puissants et fiables.",
     siteName: 'OPT Conseil',
+    images: [{ url: '/og-promptia.png', width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'PromptIA - Générateur de prompts IA | OPT Conseil',
+    description: "Votre assistant pour créer des prompts IA puissants et fiables.",
+    images: ['/og-promptia.png'],
   },
 }
 
