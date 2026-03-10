@@ -31,6 +31,7 @@ export default function StructuredMode({ data, onChange }) {
         <div className="space-y-3">
           <div>
             <label className="field-label">Type de tâche</label>
+            <p className="field-hint">Ce que l'IA doit faire : rédiger, analyser, résumer...</p>
             <SelectWithOther
               value={data.taskType}
               customValue={data.customTaskType}
@@ -42,6 +43,7 @@ export default function StructuredMode({ data, onChange }) {
           </div>
           <div>
             <label className="field-label">Objectif</label>
+            <p className="field-hint">Le résultat concret que vous attendez de l'IA</p>
             <textarea
               value={data.objective}
               onChange={set('objective')}
@@ -59,6 +61,7 @@ export default function StructuredMode({ data, onChange }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="field-label">Secteur</label>
+              <p className="field-hint">Le domaine d'activité concerné (ex : marketing, finance, santé)</p>
               <SelectWithOther
                 value={data.domain}
                 customValue={data.customDomain}
@@ -70,6 +73,7 @@ export default function StructuredMode({ data, onChange }) {
             </div>
             <div>
               <label className="field-label">Sous-domaine</label>
+              <p className="field-hint">La spécialité précise au sein du secteur</p>
               <SelectWithOther
                 value={data.subdomain}
                 customValue={data.customSubdomain}
@@ -84,6 +88,7 @@ export default function StructuredMode({ data, onChange }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="field-label">Taille structure</label>
+              <p className="field-hint">La taille de l'entreprise ou organisation concernée</p>
               <SelectWithOther
                 value={data.size}
                 customValue={data.customSize}
@@ -95,6 +100,7 @@ export default function StructuredMode({ data, onChange }) {
             </div>
             <div>
               <label className="field-label">Public cible</label>
+              <p className="field-hint">À qui s'adresse le résultat produit par l'IA</p>
               <SelectWithOther
                 value={data.audience}
                 customValue={data.customAudience}
@@ -107,6 +113,7 @@ export default function StructuredMode({ data, onChange }) {
           </div>
           <div>
             <label className="field-label">Niveau de l'audience</label>
+            <p className="field-hint">Le degré d'expertise de votre audience sur le sujet</p>
             <SelectWithOther
               value={data.level}
               customValue={data.customLevel}
@@ -118,6 +125,7 @@ export default function StructuredMode({ data, onChange }) {
           </div>
           <div>
             <label className="field-label">Situation (contexte libre)</label>
+            <p className="field-hint">Tout élément de contexte utile : deadline, enjeu, contrainte...</p>
             <textarea
               value={data.situation}
               onChange={set('situation')}
@@ -134,6 +142,7 @@ export default function StructuredMode({ data, onChange }) {
         <div className="space-y-3">
           <div>
             <label className="field-label">Type de document</label>
+            <p className="field-hint">Le type de livrable attendu : email, rapport, tableau...</p>
             <SelectWithOther
               value={data.documentType}
               customValue={data.customDocumentType}
@@ -145,6 +154,7 @@ export default function StructuredMode({ data, onChange }) {
           </div>
           <div>
             <label className="field-label">Longueur souhaitée</label>
+            <p className="field-hint">La taille approximative du résultat final</p>
             <SelectWithOther
               value={data.length}
               customValue={data.customLength}
@@ -162,6 +172,7 @@ export default function StructuredMode({ data, onChange }) {
         <div className="space-y-3">
           <div>
             <label className="field-label">Ton</label>
+            <p className="field-hint">Le registre de langage : formel, décontracté, pédagogique...</p>
             <SelectWithOther
               value={data.tone}
               customValue={data.customTone}
@@ -173,6 +184,7 @@ export default function StructuredMode({ data, onChange }) {
           </div>
           <div>
             <label className="field-label">Structure de la réponse</label>
+            <p className="field-hint">Comment organiser le contenu : liste, tableau, paragraphes...</p>
             <SelectWithOther
               value={data.structure}
               customValue={data.customStructure}

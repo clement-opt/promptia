@@ -23,9 +23,10 @@ export default function ExpressMode({ data, onChange }) {
 
       {/* Champ 1 : Rôle */}
       <div>
-        <label className="block text-opt-text font-semibold text-sm mb-1.5">
+        <label className="block text-opt-text font-semibold text-sm mb-0.5">
           Tu es un...
         </label>
+        <p className="field-hint">Le rôle que l'IA doit incarner pour vous répondre</p>
         <SelectWithOther
           value={data.role}
           customValue={data.customRole}
@@ -40,9 +41,10 @@ export default function ExpressMode({ data, onChange }) {
 
       {/* Champ 2 : Je veux */}
       <div>
-        <label className="block text-opt-text font-semibold text-sm mb-1.5">
+        <label className="block text-opt-text font-semibold text-sm mb-0.5">
           Je veux...
         </label>
+        <p className="field-hint">Décrivez votre besoin en une ou deux phrases claires</p>
         <textarea
           value={data.want}
           onChange={set('want')}
@@ -60,9 +62,10 @@ export default function ExpressMode({ data, onChange }) {
 
       {/* Champ 3 : Format */}
       <div>
-        <label className="block text-opt-text font-semibold text-sm mb-1.5">
+        <label className="block text-opt-text font-semibold text-sm mb-0.5">
           Le résultat doit être...
         </label>
+        <p className="field-hint">Le format dans lequel vous voulez recevoir la réponse</p>
         <SelectWithOther
           value={data.format}
           customValue={data.customFormat}

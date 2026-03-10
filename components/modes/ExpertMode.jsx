@@ -93,6 +93,7 @@ export default function ExpertMode({ data, onChange }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="field-label">Secteur (filtre le rôle)</label>
+              <p className="field-hint">Le domaine d'activité — filtre automatiquement les rôles proposés</p>
               <SelectWithOther
                 value={data.domain}
                 customValue={data.customDomain}
@@ -104,6 +105,7 @@ export default function ExpertMode({ data, onChange }) {
             </div>
             <div>
               <label className="field-label">Rôle</label>
+              <p className="field-hint">Le persona expert que l'IA doit incarner</p>
               <SelectWithOther
                 value={data.role}
                 customValue={data.customRole}
@@ -118,6 +120,7 @@ export default function ExpertMode({ data, onChange }) {
 
           <div>
             <label className="field-label">Années d'expérience : {data.years}</label>
+            <p className="field-hint">Le niveau de séniorité du rôle simulé</p>
             <input
               type="range"
               min={1} max={30}
@@ -130,6 +133,7 @@ export default function ExpertMode({ data, onChange }) {
           {subdomainOptions.length > 0 && (
             <div>
               <label className="field-label">Spécialisations (max 3)</label>
+              <p className="field-hint">Les domaines de compétence spécifiques du rôle</p>
               <div className="flex flex-wrap gap-2 mt-1">
                 {subdomainOptions.map((s) => {
                   const selected = (data.specializations || []).includes(s)
@@ -155,6 +159,7 @@ export default function ExpertMode({ data, onChange }) {
 
           <div>
             <label className="field-label">Posture / Personnalité</label>
+            <p className="field-hint">L'attitude de l'IA : directif, bienveillant, challengeant...</p>
             <SelectWithOther
               value={data.personality}
               customValue={data.customPersonality}
@@ -172,6 +177,7 @@ export default function ExpertMode({ data, onChange }) {
         <div className="space-y-3">
           <div>
             <label className="field-label">Type de tâche</label>
+            <p className="field-hint">Ce que l'IA doit faire : rédiger, analyser, résumer...</p>
             <SelectWithOther
               value={data.taskType}
               customValue={data.customTaskType}
@@ -183,16 +189,19 @@ export default function ExpertMode({ data, onChange }) {
           </div>
           <div>
             <label className="field-label">Objectif principal</label>
+            <p className="field-hint">Le livrable ou résultat concret que vous attendez</p>
             <textarea value={data.objective} onChange={set('objective')} rows={3}
               placeholder="Décrivez précisément ce que vous attendez" className={textareaClass} />
           </div>
           <div>
             <label className="field-label">Critères de succès</label>
+            <p className="field-hint">Comment vous jugerez si la réponse est réussie</p>
             <textarea value={data.successCriteria} onChange={set('successCriteria')} rows={2}
               placeholder="Comment saurez-vous que le résultat est bon ?" className={textareaClass} />
           </div>
           <div>
             <label className="field-label">Ce que le résultat N'est PAS</label>
+            <p className="field-hint">Ce que vous ne voulez surtout pas dans la réponse</p>
             <textarea value={data.notThis} onChange={set('notThis')} rows={2}
               placeholder="Ex : pas de jargon, pas de bullet points" className={textareaClass} />
           </div>
@@ -205,6 +214,7 @@ export default function ExpertMode({ data, onChange }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="field-label">Sous-domaine</label>
+              <p className="field-hint">La spécialité précise au sein du secteur</p>
               <SelectWithOther
                 value={data.subdomain}
                 customValue={data.customSubdomain}
@@ -217,6 +227,7 @@ export default function ExpertMode({ data, onChange }) {
             </div>
             <div>
               <label className="field-label">Taille structure</label>
+              <p className="field-hint">La taille de l'entreprise ou organisation concernée</p>
               <SelectWithOther
                 value={data.size}
                 customValue={data.customSize}
@@ -230,6 +241,7 @@ export default function ExpertMode({ data, onChange }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="field-label">Public cible</label>
+              <p className="field-hint">À qui s'adresse le résultat final</p>
               <SelectWithOther
                 value={data.audience}
                 customValue={data.customAudience}
@@ -241,6 +253,7 @@ export default function ExpertMode({ data, onChange }) {
             </div>
             <div>
               <label className="field-label">Niveau</label>
+              <p className="field-hint">Le degré d'expertise de votre audience</p>
               <SelectWithOther
                 value={data.level}
                 customValue={data.customLevel}
@@ -253,16 +266,19 @@ export default function ExpertMode({ data, onChange }) {
           </div>
           <div>
             <label className="field-label">Situation</label>
+            <p className="field-hint">Le contexte spécifique : deadline, enjeu, contrainte...</p>
             <textarea value={data.situation} onChange={set('situation')} rows={2}
               placeholder="Contexte spécifique de votre demande" className={textareaClass} />
           </div>
           <div>
             <label className="field-label">Données d'entrée</label>
+            <p className="field-hint">Infos brutes à fournir : chiffres, notes, extraits, URLs...</p>
             <textarea value={data.rawData} onChange={set('rawData')} rows={4}
               placeholder="Collez ici du contexte brut : notes, extraits, chiffres..." className={textareaClass} />
           </div>
           <div>
             <label className="field-label">Historique</label>
+            <p className="field-hint">Ce qui a déjà été tenté ou décidé sur ce sujet</p>
             <textarea value={data.history} onChange={set('history')} rows={2}
               placeholder="Ce qui a déjà été tenté, ce qui n'a pas marché" className={textareaClass} />
           </div>
@@ -275,6 +291,7 @@ export default function ExpertMode({ data, onChange }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="field-label">Longueur</label>
+              <p className="field-hint">La taille approximative du résultat final</p>
               <SelectWithOther
                 value={data.length}
                 customValue={data.customLength}
@@ -286,6 +303,7 @@ export default function ExpertMode({ data, onChange }) {
             </div>
             <div>
               <label className="field-label">Ton</label>
+              <p className="field-hint">Le registre de langage souhaité</p>
               <SelectWithOther
                 value={data.tone}
                 customValue={data.customTone}
@@ -298,6 +316,7 @@ export default function ExpertMode({ data, onChange }) {
           </div>
           <div>
             <label className="field-label">Structure</label>
+            <p className="field-hint">Comment organiser le contenu : liste, tableau, paragraphes...</p>
             <SelectWithOther
               value={data.structure}
               customValue={data.customStructure}
@@ -309,11 +328,13 @@ export default function ExpertMode({ data, onChange }) {
           </div>
           <div>
             <label className="field-label">Contraintes négatives (NE PAS faire)</label>
+            <p className="field-hint">Ce que l'IA ne doit absolument pas faire ou inclure</p>
             <textarea value={data.negativeConstraints} onChange={set('negativeConstraints')} rows={2}
               placeholder="Ex : Ne pas utiliser de jargon technique, ne pas dépasser 2 pages" className={textareaClass} />
           </div>
           <div>
             <label className="field-label">Contraintes positives (DOIT faire)</label>
+            <p className="field-hint">Ce que l'IA doit obligatoirement inclure</p>
             <textarea value={data.positiveConstraints} onChange={set('positiveConstraints')} rows={2}
               placeholder="Ex : Inclure des exemples concrets, proposer des actions immédiates" className={textareaClass} />
           </div>
@@ -325,6 +346,7 @@ export default function ExpertMode({ data, onChange }) {
         <div className="space-y-3">
           <div>
             <label className="field-label">Type de document</label>
+            <p className="field-hint">Le type de livrable attendu : email, rapport, tableau...</p>
             <SelectWithOther
               value={data.documentType}
               customValue={data.customDocumentType}
@@ -336,11 +358,13 @@ export default function ExpertMode({ data, onChange }) {
           </div>
           <div>
             <label className="field-label">Sections obligatoires</label>
+            <p className="field-hint">Les parties que le document doit contenir</p>
             <textarea value={data.mandatorySections} onChange={set('mandatorySections')} rows={2}
               placeholder="Ex : Introduction, Diagnostic, Recommandations, Budget" className={textareaClass} />
           </div>
           <div>
             <label className="field-label">Template (optionnel)</label>
+            <p className="field-hint">Un modèle ou une structure existante à reproduire</p>
             <textarea value={data.template} onChange={set('template')} rows={4}
               placeholder="Collez un modèle ou une structure à respecter" className={textareaClass} />
           </div>
@@ -400,11 +424,13 @@ export default function ExpertMode({ data, onChange }) {
               <p className="text-xs font-bold text-opt-violet">Exemple {i + 1}</p>
               <div>
                 <label className="field-label">Input (ce que vous donnez à l'IA)</label>
+                <p className="field-hint">La question ou donnée que vous donneriez à l'IA</p>
                 <textarea value={ex.input} onChange={(e) => setExample(i, 'input', e.target.value)}
                   rows={2} placeholder="Donnée d'entrée..." className={textareaClass} />
               </div>
               <div>
                 <label className="field-label">Output attendu</label>
+                <p className="field-hint">La réponse idéale que vous aimeriez obtenir</p>
                 <textarea value={ex.output} onChange={(e) => setExample(i, 'output', e.target.value)}
                   rows={2} placeholder="Résultat que vous attendez..." className={textareaClass} />
               </div>
