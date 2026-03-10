@@ -282,6 +282,17 @@ export default function ExpertMode({ data, onChange }) {
             <textarea value={data.history} onChange={set('history')} rows={2}
               placeholder="Ce qui a déjà été tenté, ce qui n'a pas marché" className={textareaClass} />
           </div>
+          <label className="flex items-start gap-2.5 cursor-pointer group mt-1">
+            <input
+              type="checkbox"
+              checked={data.askQuestions || false}
+              onChange={(e) => onChange({ ...data, askQuestions: e.target.checked })}
+              className="mt-0.5 w-4 h-4 accent-[var(--opt-violet)] flex-shrink-0"
+            />
+            <span className="text-sm text-opt-text group-hover:text-opt-violet transition-colors">
+              Pose-moi des questions pour préciser le contexte avant de répondre
+            </span>
+          </label>
         </div>
       </Block>
 

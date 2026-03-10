@@ -35,7 +35,7 @@ const INIT_EXPERT = {
   taskType: '', customTaskType: '', objective: '', successCriteria: '', notThis: '',
   domain: '', customDomain: '', subdomain: '', customSubdomain: '',
   size: '', customSize: '', audience: '', customAudience: '', level: '', customLevel: '',
-  situation: '', rawData: '', history: '',
+  situation: '', rawData: '', history: '', askQuestions: false,
   length: '', customLength: '', tone: '', customTone: '', structure: '', customStructure: '',
   negativeConstraints: '', positiveConstraints: '',
   documentType: '', customDocumentType: '', mandatorySections: '', template: '',
